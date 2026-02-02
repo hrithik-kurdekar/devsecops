@@ -139,4 +139,18 @@ jobs:
 
       - name: Pushing Images
         run: docker push "${{secrets.DOCKERHUB_USER}}/${{matrix.image}}"
+
+  deploy_app:
+    runs-on: self-hosted
+    defaults:
+      run:
+        shell: bash
+    needs: build_scan_push_images
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Deploying Application
+        run: docker compose up -d --build
+
       

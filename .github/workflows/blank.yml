@@ -41,4 +41,58 @@ jobs:
         with:
           name: Pylint Scan'
           path: pylint_report.txt
+
+  flake8_scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    needs: start_pipeline
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Running Flake8 Scan
+        run: >
+          docker run
+          --rm
+          -v ${{github.workspace}}:/workspace
+          alpine/flake8 /workspace/backend/app
+          | tee flake8_report.txt
+          || true
+
+      - name: Uploading Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Flake8 Scan'
+          path: flake8_report.txt
+
+  trivy_scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    needs: start_pipeline
+    strategy:
+      matrix:
+        type: [frontend, backend]
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Running Trivy Scan
+        run: >
+          docker run
+          --rm
+          -v ${{github.workspace}}:/workspace
+          aquasec/trivy fs --no-progress --severity HIGH,CRITICAL --output "trivy_${{matrix.type}}_report.txt" /workspace/${{matrix.type}}
+          || true
+
+      - name: Uploading Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Trivy ${{matrix.type}} Scan'
+          path: "trivy_${{matrix.type}}_report.txt"
       

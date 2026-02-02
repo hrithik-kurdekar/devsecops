@@ -1,8 +1,8 @@
 name: Devsecops Pipeline
 
 on:
-  push:
-    branches: ["main"]
+  # push:
+  #   branches: ["main"]
   pull_request:
     branches: ["main"]
 
@@ -118,8 +118,7 @@ jobs:
           - image: voting_app_backend
             type: frontend
           - image: voting_app_frontend
-            type: backend
-        
+            type: backend    
     needs: [flake8_scan, pylint_scan, trivy_scan]
     steps:
       - name: Chekout Code
@@ -127,10 +126,13 @@ jobs:
         with:
           sparse-checkout: |
             docker-compose.yml
+            docker-compose.override.yml
             "/${{matrix.type}}"
           sparse-checkout-cone-mode: false
 
       - name: Building Images
+        env:
+          DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
         run: docker compose build ${{matrix.image}}
 
       - name: Running Trivy Scan
@@ -139,7 +141,7 @@ jobs:
           --rm
           -v ${{github.workspace}}:/workspace
           -v /var/run/docker.sock:/var/run/docker.sock
-          aquasec/trivy image --no-progress --severity HIGH,CRITICAL --output "/workspace/trivy_${{matrix.image}}_image_scan_report.txt" ${{matrix.image}}
+          aquasec/trivy image --no-progress --severity HIGH,CRITICAL --output "/workspace/trivy_${{matrix.image}}_image_scan_report.txt" "${{secrets.DOCKERHUB_USER}}/${{matrix.image}}"
           || true
 
       - name: Uploading Artifact
@@ -148,9 +150,6 @@ jobs:
         with:
           name: Trivy ${{matrix.image}} Scan'
           path: "trivy_${{matrix.image}}_image_scan_report.txt"
-
-      - name: Tagging Images
-        run: docker tag ${{matrix.image}} "${{secrets.DOCKERHUB_USER}}/${{matrix.image}}"
 
       - name: Docker Login
         uses: docker/login-action@v3

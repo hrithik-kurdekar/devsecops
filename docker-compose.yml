@@ -20,7 +20,7 @@ services:
 
   voting_app_backend:
     container_name: voting_app_backend 
-    image: hkshub/voting_app_backend 
+    image: ${DOCKERHUB_USER}/voting_app_backend 
     environment:
       DATABASE_URL: postgresql://admin:secret@voting_app_db/voting_db
     depends_on:
@@ -33,7 +33,7 @@ services:
 
   voting_app_frontend:
     container_name: voting_app_frontend  
-    image: hkshub/voting_app_frontend 
+    image: ${DOCKERHUB_USER}/voting_app_frontend 
     environment:
       REACT_APP_API_BASE_URL: https://localhost
     ports:
@@ -56,4 +56,5 @@ services:
       - 443:443
     depends_on:
       - voting_app_backend
+
 

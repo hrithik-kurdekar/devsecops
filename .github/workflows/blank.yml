@@ -1,8 +1,8 @@
 name: Devsecops Pipeline
 
 on:
-  # push:
-  #   branches: ["main"]
+  push:
+    branches: ["main"]
   pull_request:
     branches: ["main"]
 
@@ -173,8 +173,11 @@ jobs:
           sparse-checkout: |
             docker-compose.yml
             /nginx
+          sparse-checkout-cone-mode: false
 
       - name: Deploying Application
+        env:
+          DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
         run: docker compose up -d
 
       

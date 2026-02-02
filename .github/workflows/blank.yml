@@ -126,7 +126,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: Trivy ${{matrix.image}} Scan'
-          path: "trivy_${{matrix.image}}_report.txt"
+          path: "/workspace/trivy_${{matrix.image}}_image_scan_report.txt"
 
       - name: Tagging Images
         run: docker tag ${{matrix.image}} "${{secrets.DOCKERHUB_USER}}/${{matrix.image}}"

@@ -1,0 +1,8 @@
+services:
+  voting_app_backend:
+    build: ./backend
+    image: voting_app_backend
+
+  voting_app_frontend:
+    build: ./frontend
+    image: voting_app_frontend

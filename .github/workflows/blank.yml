@@ -25,6 +25,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: /backend
+          sparse-checkout-cone-mode: false
       
       - name: Running Pylint Scan
         run: >
@@ -51,6 +54,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: /backend
+          sparse-checkout-cone-mode: false
       
       - name: Running Flake8 Scan
         run: >
@@ -80,6 +86,9 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: "/${{matrix.type}}"
+          sparse-checkout-cone-mode: false
       
       - name: Running Trivy Scan
         run: >
@@ -104,10 +113,22 @@ jobs:
     strategy:
       matrix:
         image: [voting_app_backend, voting_app_frontend]
+        type: [frontend, backend]
+        exclude:
+          - image: voting_app_backend
+            type: frontend
+          - image: voting_app_frontend
+            type: backend
+        
     needs: [flake8_scan, pylint_scan, trivy_scan]
     steps:
       - name: Chekout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docker-compose.yml
+            "/${{matrix.type}}"
+          sparse-checkout-cone-mode: false
 
       - name: Building Images
         run: docker compose build ${{matrix.image}}
@@ -149,8 +170,12 @@ jobs:
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+        with:
+          sparse-checkout: |
+            docker-compose.yml
+            /nginx
 
       - name: Deploying Application
-        run: docker compose up -d --build
+        run: docker compose up -d
 
       

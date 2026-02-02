@@ -1,0 +1,44 @@
+name: Devsecops Pipeline
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  start_pipeline:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    steps:
+      - name: Starting the pipeline
+        run: echo "Starting the Pipeline"
+
+  pylint_scan:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: bash
+    needs: start_pipeline
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+      
+      - name: Running Pylint Scan
+        run: >
+          docker run
+          --rm
+          -v ${{github.workspace}}:/workspace
+          cytopia/pylint /workspace/backend/app
+          | tee pylint_report.txt
+          || true
+
+      - name: Uploading Artifact
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: Pylint Scan'
+          path: pylint_report.txt
+      

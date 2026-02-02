@@ -86,7 +86,7 @@ jobs:
           docker run
           --rm
           -v ${{github.workspace}}:/workspace
-          aquasec/trivy fs --no-progress --severity HIGH,CRITICAL --output "trivy_${{matrix.type}}_report.txt" /workspace/${{matrix.type}}
+          aquasec/trivy fs --no-progress --severity HIGH,CRITICAL --output "/workspace/trivy_${{matrix.type}}_report.txt" "/workspace/${{matrix.type}}"
           || true
 
       - name: Uploading Artifact

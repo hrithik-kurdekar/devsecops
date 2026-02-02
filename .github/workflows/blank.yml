@@ -26,7 +26,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          sparse-checkout: /backend
+          sparse-checkout: backend/**
           sparse-checkout-cone-mode: false
       
       - name: Running Pylint Scan
@@ -55,7 +55,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          sparse-checkout: /backend
+          sparse-checkout: backend/**
           sparse-checkout-cone-mode: false
       
       - name: Running Flake8 Scan
@@ -87,7 +87,7 @@ jobs:
       - name: Checkout Code
         uses: actions/checkout@v4
         with:
-          sparse-checkout: "/${{matrix.type}}"
+          sparse-checkout: ${{matrix.type}}/**
           sparse-checkout-cone-mode: false
       
       - name: Running Trivy Scan
@@ -127,7 +127,7 @@ jobs:
           sparse-checkout: |
             docker-compose.yml
             docker-compose.override.yml
-            "/${{matrix.type}}"
+            ${{matrix.type}}/**
           sparse-checkout-cone-mode: false
 
       - name: Building Images
@@ -172,7 +172,7 @@ jobs:
         with:
           sparse-checkout: |
             docker-compose.yml
-            /nginx
+            nginx/**
           sparse-checkout-cone-mode: false
 
       - name: Deploying Application

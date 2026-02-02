@@ -133,7 +133,7 @@ jobs:
       - name: Building Images
         env:
           DOCKERHUB_USER: ${{secrets.DOCKERHUB_USER}}
-        run: docker compose build ${{matrix.image}}
+        run: docker compose build "${{secrets.DOCKERHUB_USER}}/${{matrix.image}}"
 
       - name: Running Trivy Scan
         run: >
